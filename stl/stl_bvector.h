@@ -360,7 +360,7 @@ protected:
 #  define __BVECTOR_BASE      _Bvector_base<_Alloc>
 #  define __BVECTOR_TMPL_LIST template <class _Alloc>
    __STL_END_NAMESPACE
-#  include <stl_vector.h>
+#  include "stl_vector.h"
    __STL_BEGIN_NAMESPACE
 #else  /* __STL_CLASS_PARTIAL_SPECIALIZATION && !__STL_NO_BOOL */
 #  undef  __SGI_STL_VECBOOL_TEMPLATE
@@ -412,26 +412,26 @@ protected:
 
 protected:
   void _M_initialize(size_type __n) {
-    unsigned int* __q = _M_bit_alloc(__n);
-    _M_end_of_storage = __q + (__n + __WORD_BIT - 1)/__WORD_BIT;
-    _M_start = iterator(__q, 0);
-    _M_finish = _M_start + difference_type(__n);
+    unsigned int* __q = this->_M_bit_alloc(__n);
+    this->_M_end_of_storage = __q + (__n + __WORD_BIT - 1)/__WORD_BIT;
+    this->_M_start = iterator(__q, 0);
+    this->_M_finish = this->_M_start + difference_type(__n);
   }
   void _M_insert_aux(iterator __position, bool __x) {
-    if (_M_finish._M_p != _M_end_of_storage) {
-      copy_backward(__position, _M_finish, _M_finish + 1);
+    if (this->_M_finish._M_p != this->_M_end_of_storage) {
+      copy_backward(__position, this->_M_finish, this->_M_finish + 1);
       *__position = __x;
-      ++_M_finish;
+      ++this->_M_finish;
     }
     else {
       size_type __len = size() ? 2 * size() : __WORD_BIT;
-      unsigned int* __q = _M_bit_alloc(__len);
+      unsigned int* __q = this->_M_bit_alloc(__len);
       iterator __i = copy(begin(), __position, iterator(__q, 0));
       *__i++ = __x;
-      _M_finish = copy(__position, end(), __i);
-      _M_deallocate();
-      _M_end_of_storage = __q + (__len + __WORD_BIT - 1)/__WORD_BIT;
-      _M_start = iterator(__q, 0);
+      this->_M_finish = copy(__position, end(), __i);
+      this->_M_deallocate();
+      this->_M_end_of_storage = __q + (__len + __WORD_BIT - 1)/__WORD_BIT;
+      this->_M_start = iterator(__q, 0);
     }
   }
 
@@ -439,9 +439,9 @@ protected:
   template <class _InputIterator>
   void _M_initialize_range(_InputIterator __first, _InputIterator __last,
                            input_iterator_tag) {
-    _M_start = iterator();
-    _M_finish = iterator();
-    _M_end_of_storage = 0;
+    this->_M_start = iterator();
+    this->_M_finish = iterator();
+    this->_M_end_of_storage = 0;
     for ( ; __first != __last; ++__first) 
       push_back(*__first);
   }
@@ -452,7 +452,7 @@ protected:
     size_type __n = 0;
     distance(__first, __last, __n);
     _M_initialize(__n);
-    copy(__first, __last, _M_start);
+    copy(__first, __last, this->_M_start);
   }
 
   template <class _InputIterator>
@@ -473,19 +473,19 @@ protected:
       size_type __n = 0;
       distance(__first, __last, __n);
       if (capacity() - size() >= __n) {
-        copy_backward(__position, end(), _M_finish + difference_type(__n));
+        copy_backward(__position, end(), this->_M_finish + difference_type(__n));
         copy(__first, __last, __position);
-        _M_finish += difference_type(__n);
+        this->_M_finish += difference_type(__n);
       }
       else {
         size_type __len = size() + max(size(), __n);
-        unsigned int* __q = _M_bit_alloc(__len);
+        unsigned int* __q = this->_M_bit_alloc(__len);
         iterator __i = copy(begin(), __position, iterator(__q, 0));
         __i = copy(__first, __last, __i);
-        _M_finish = copy(__position, end(), __i);
-        _M_deallocate();
-        _M_end_of_storage = __q + (__len + __WORD_BIT - 1)/__WORD_BIT;
-        _M_start = iterator(__q, 0);
+        this->_M_finish = copy(__position, end(), __i);
+        this->_M_deallocate();
+        this->_M_end_of_storage = __q + (__len + __WORD_BIT - 1)/__WORD_BIT;
+        this->_M_start = iterator(__q, 0);
       }
     }
   }      
@@ -493,10 +493,10 @@ protected:
 #endif /* __STL_MEMBER_TEMPLATES */
 
 public:
-  iterator begin() { return _M_start; }
-  const_iterator begin() const { return _M_start; }
-  iterator end() { return _M_finish; }
-  const_iterator end() const { return _M_finish; }
+  iterator begin() { return this->_M_start; }
+  const_iterator begin() const { return this->_M_start; }
+  iterator end() { return this->_M_finish; }
+  const_iterator end() const { return this->_M_finish; }
 
   reverse_iterator rbegin() { return reverse_iterator(end()); }
   const_reverse_iterator rbegin() const { 
@@ -510,7 +510,7 @@ public:
   size_type size() const { return size_type(end() - begin()); }
   size_type max_size() const { return size_type(-1); }
   size_type capacity() const {
-    return size_type(const_iterator(_M_end_of_storage, 0) - begin());
+    return size_type(const_iterator(this->_M_end_of_storage, 0) - begin());
   }
   bool empty() const { return begin() == end(); }
 
@@ -539,19 +539,19 @@ public:
     : __BVECTOR_BASE(__a)
   {
     _M_initialize(__n);
-    fill(_M_start._M_p, _M_end_of_storage, __value ? ~0 : 0);
+    fill(this->_M_start._M_p, this->_M_end_of_storage, __value ? ~0 : 0);
   }
 
   explicit __VECTOR(size_type __n)
     : __BVECTOR_BASE(allocator_type())
   {
     _M_initialize(__n);
-    fill(_M_start._M_p, _M_end_of_storage, 0);
+    fill(this->_M_start._M_p, this->_M_end_of_storage, 0);
   }
 
   __VECTOR(const __VECTOR& __x) : __BVECTOR_BASE(__x.get_allocator()) {
     _M_initialize(__x.size());
-    copy(__x.begin(), __x.end(), _M_start);
+    copy(__x.begin(), __x.end(), this->_M_start);
   }
 
 #ifdef __STL_MEMBER_TEMPLATES
@@ -561,7 +561,7 @@ public:
   template <class _Integer>
   void _M_initialize_dispatch(_Integer __n, _Integer __x, __true_type) {
     _M_initialize(__n);
-    fill(_M_start._M_p, _M_end_of_storage, __x ? ~0 : 0);
+    fill(this->_M_start._M_p, this->_M_end_of_storage, __x ? ~0 : 0);
   }
 
   template <class _InputIterator>
@@ -607,11 +607,11 @@ public:
   __VECTOR& operator=(const __VECTOR& __x) {
     if (&__x == this) return *this;
     if (__x.size() > capacity()) {
-      _M_deallocate();
+      this->_M_deallocate();
       _M_initialize(__x.size());
     }
     copy(__x.begin(), __x.end(), begin());
-    _M_finish = begin() + difference_type(__x.size());
+    this->_M_finish = begin() + difference_type(__x.size());
     return *this;
   }
 
@@ -622,12 +622,12 @@ public:
 
   void _M_fill_assign(size_t __n, bool __x) {
     if (__n > size()) {
-      fill(_M_start._M_p, _M_end_of_storage, __x ? ~0 : 0);
+      fill(this->_M_start._M_p, this->_M_end_of_storage, __x ? ~0 : 0);
       insert(end(), __n - size(), __x);
     }
     else {
       erase(begin() + __n, end());
-      fill(_M_start._M_p, _M_end_of_storage, __x ? ~0 : 0);
+      fill(this->_M_start._M_p, this->_M_end_of_storage, __x ? ~0 : 0);
     }
   }
 
@@ -680,11 +680,11 @@ public:
 
   void reserve(size_type __n) {
     if (capacity() < __n) {
-      unsigned int* __q = _M_bit_alloc(__n);
-      _M_finish = copy(begin(), end(), iterator(__q, 0));
-      _M_deallocate();
-      _M_start = iterator(__q, 0);
-      _M_end_of_storage = __q + (__n + __WORD_BIT - 1)/__WORD_BIT;
+      unsigned int* __q = this->_M_bit_alloc(__n);
+      this->_M_finish = copy(begin(), end(), iterator(__q, 0));
+      this->_M_deallocate();
+      this->_M_start = iterator(__q, 0);
+      this->_M_end_of_storage = __q + (__n + __WORD_BIT - 1)/__WORD_BIT;
     }
   }
 
@@ -693,20 +693,20 @@ public:
   reference back() { return *(end() - 1); }
   const_reference back() const { return *(end() - 1); }
   void push_back(bool __x) {
-    if (_M_finish._M_p != _M_end_of_storage)
-      *_M_finish++ = __x;
+    if (this->_M_finish._M_p != this->_M_end_of_storage)
+      *this->_M_finish++ = __x;
     else
       _M_insert_aux(end(), __x);
   }
   void swap(__BVECTOR& __x) {
-    __STD::swap(_M_start, __x._M_start);
-    __STD::swap(_M_finish, __x._M_finish);
-    __STD::swap(_M_end_of_storage, __x._M_end_of_storage);
+    __STD::swap(this->_M_start, __x._M_start);
+    __STD::swap(this->_M_finish, __x._M_finish);
+    __STD::swap(this->_M_end_of_storage, __x._M_end_of_storage);
   }
   iterator insert(iterator __position, bool __x = bool()) {
     difference_type __n = __position - begin();
-    if (_M_finish._M_p != _M_end_of_storage && __position == end())
-      *_M_finish++ = __x;
+    if (this->_M_finish._M_p != this->_M_end_of_storage && __position == end())
+      *this->_M_finish++ = __x;
     else
       _M_insert_aux(__position, __x);
     return begin() + __n;
@@ -783,19 +783,19 @@ public:
   void _M_fill_insert(iterator __position, size_type __n, bool __x) {
     if (__n == 0) return;
     if (capacity() - size() >= __n) {
-      copy_backward(__position, end(), _M_finish + difference_type(__n));
+      copy_backward(__position, end(), this->_M_finish + difference_type(__n));
       fill(__position, __position + difference_type(__n), __x);
-      _M_finish += difference_type(__n);
+      this->_M_finish += difference_type(__n);
     }
     else {
       size_type __len = size() + max(size(), __n);
-      unsigned int* __q = _M_bit_alloc(__len);
+      unsigned int* __q = this->_M_bit_alloc(__len);
       iterator __i = copy(begin(), __position, iterator(__q, 0));
       fill_n(__i, __n, __x);
-      _M_finish = copy(__position, end(), __i + difference_type(__n));
-      _M_deallocate();
-      _M_end_of_storage = __q + (__len + __WORD_BIT - 1)/__WORD_BIT;
-      _M_start = iterator(__q, 0);
+      this->_M_finish = copy(__position, end(), __i + difference_type(__n));
+      this->_M_deallocate();
+      this->_M_end_of_storage = __q + (__len + __WORD_BIT - 1)/__WORD_BIT;
+      this->_M_start = iterator(__q, 0);
     }
   }
 
@@ -803,15 +803,15 @@ public:
     _M_fill_insert(__position, __n, __x);
   }
 
-  void pop_back() { --_M_finish; }
+  void pop_back() { --this->_M_finish; }
   iterator erase(iterator __position) {
     if (__position + 1 != end())
       copy(__position + 1, end(), __position);
-      --_M_finish;
+      --this->_M_finish;
     return __position;
   }
   iterator erase(iterator __first, iterator __last) {
-    _M_finish = copy(__last, end(), __first);
+    this->_M_finish = copy(__last, end(), __first);
     return __first;
   }
   void resize(size_type __new_size, bool __x = bool()) {
@@ -821,7 +821,7 @@ public:
       insert(end(), __new_size - size(), __x);
   }
   void flip() {
-    for (unsigned int* __p = _M_start._M_p; __p != _M_end_of_storage; ++__p)
+    for (unsigned int* __p = this->_M_start._M_p; __p != this->_M_end_of_storage; ++__p)
       *__p = ~*__p;
   }
 

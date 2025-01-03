@@ -803,16 +803,16 @@ class _Rope_find_char_char_consumer : public _Rope_char_consumer<_CharT> {
 class _Rope_insert_char_consumer : public _Rope_char_consumer<_CharT> {
     private:
 #       ifdef __STL_USE_NEW_IOSTREAMS
-	  typedef basic_ostream<_CharT,_Traits> _Insert_ostream;
+	  typedef std::basic_ostream<_CharT,_Traits> _Insert_ostream;
 #	else
-	  typedef ostream _Insert_ostream;
+	  typedef std::ostream _Insert_ostream;
 #	endif
 	_Insert_ostream& _M_o;
     public:
 	_Rope_insert_char_consumer(_Insert_ostream& __writer) 
 	  : _M_o(__writer) {};
 	~_Rope_insert_char_consumer() { };
-		// Caller is presumed to own the ostream
+		// Caller is presumed to own the std::ostream
 	bool operator() (const _CharT* __leaf, size_t __n);
 		// Returns true to continue traversal.
 };
@@ -910,9 +910,9 @@ bool rope<_CharT, _Alloc>::_S_apply_to_pieces(
 
 #ifdef __STL_USE_NEW_IOSTREAMS
   template<class _CharT, class _Traits>
-  inline void _Rope_fill(basic_ostream<_CharT, _Traits>& __o, size_t __n)
+  inline void _Rope_fill(std::basic_ostream<_CharT, _Traits>& __o, size_t __n)
 #else
-  inline void _Rope_fill(ostream& __o, size_t __n)
+  inline void _Rope_fill(std::ostream& __o, size_t __n)
 #endif
 {
     char __f = __o.fill();
@@ -928,12 +928,12 @@ inline bool _Rope_is_simple(wchar_t*) { return true; }
 
 #ifdef __STL_USE_NEW_IOSTREAMS
   template<class _CharT, class _Traits, class _Alloc>
-  basic_ostream<_CharT, _Traits>& operator<<
-					(basic_ostream<_CharT, _Traits>& __o,
+  std::basic_ostream<_CharT, _Traits>& operator<<
+					(std::basic_ostream<_CharT, _Traits>& __o,
 					 const rope<_CharT, _Alloc>& __r)
 #else
   template<class _CharT, class _Alloc>
-  ostream& operator<< (ostream& __o, const rope<_CharT, _Alloc>& __r)
+  std::ostream& operator<< (std::ostream& __o, const rope<_CharT, _Alloc>& __r)
 #endif
 {
     size_t __w = __o.width();

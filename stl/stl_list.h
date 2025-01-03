@@ -31,7 +31,7 @@
 #ifndef __SGI_STL_INTERNAL_LIST_H
 #define __SGI_STL_INTERNAL_LIST_H
 
-#include <concept_checks.h>
+#include "concept_checks.h"
 
 __STL_BEGIN_NAMESPACE
 
@@ -200,13 +200,13 @@ public:
   typedef typename _Base::allocator_type allocator_type;
 
   _List_base(const allocator_type& __a) : _Base(__a) {
-    _M_node = _M_get_node();
-    _M_node->_M_next = _M_node;
-    _M_node->_M_prev = _M_node;
+    this->_M_node = this->_M_get_node();
+    this->_M_node->_M_next = this->_M_node;
+    this->_M_node->_M_prev = this->_M_node;
   }
   ~_List_base() {
     clear();
-    _M_put_node(_M_node);
+    this->_M_put_node(this->_M_node);
   }
 
   void clear();
@@ -248,15 +248,15 @@ template <class _Tp, class _Alloc>
 void 
 _List_base<_Tp,_Alloc>::clear() 
 {
-  _List_node<_Tp>* __cur = (_List_node<_Tp>*) _M_node->_M_next;
-  while (__cur != _M_node) {
+  _List_node<_Tp>* __cur = (_List_node<_Tp>*) this->_M_node->_M_next;
+  while (__cur != this->_M_node) {
     _List_node<_Tp>* __tmp = __cur;
     __cur = (_List_node<_Tp>*) __cur->_M_next;
     _Destroy(&__tmp->_M_data);
-    _M_put_node(__tmp);
+    this->_M_put_node(__tmp);
   }
-  _M_node->_M_next = _M_node;
-  _M_node->_M_prev = _M_node;
+  this->_M_node->_M_next = this->_M_node;
+  this->_M_node->_M_prev = this->_M_node;
 }
 
 template <class _Tp, class _Alloc = __STL_DEFAULT_ALLOCATOR(_Tp) >
@@ -308,17 +308,17 @@ protected:
 protected:
   _Node* _M_create_node(const _Tp& __x)
   {
-    _Node* __p = _M_get_node();
+    _Node* __p = this->_M_get_node();
     __STL_TRY {
       _Construct(&__p->_M_data, __x);
     }
-    __STL_UNWIND(_M_put_node(__p));
+    __STL_UNWIND(this->_M_put_node(__p));
     return __p;
   }
 
   _Node* _M_create_node()
   {
-    _Node* __p = _M_get_node();
+    _Node* __p = this->_M_get_node();
     __STL_TRY {
       _Construct(&__p->_M_data);
     }
@@ -329,11 +329,11 @@ protected:
 public:
   explicit list(const allocator_type& __a = allocator_type()) : _Base(__a) {}
 
-  iterator begin()             { return (_Node*)(_M_node->_M_next); }
-  const_iterator begin() const { return (_Node*)(_M_node->_M_next); }
+  iterator begin()             { return (_Node*)(this->_M_node->_M_next); }
+  const_iterator begin() const { return (_Node*)(this->_M_node->_M_next); }
 
-  iterator end()             { return _M_node; }
-  const_iterator end() const { return _M_node; }
+  iterator end()             { return this->_M_node; }
+  const_iterator end() const { return this->_M_node; }
 
   reverse_iterator rbegin() 
     { return reverse_iterator(end()); }
@@ -345,7 +345,7 @@ public:
   const_reverse_iterator rend() const
     { return const_reverse_iterator(begin()); }
 
-  bool empty() const { return _M_node->_M_next == _M_node; }
+  bool empty() const { return this->_M_node->_M_next == this->_M_node; }
   size_type size() const {
     size_type __result = 0;
     distance(begin(), end(), __result);
@@ -358,7 +358,7 @@ public:
   reference back() { return *(--end()); }
   const_reference back() const { return *(--end()); }
 
-  void swap(list<_Tp, _Alloc>& __x) { __STD::swap(_M_node, __x._M_node); }
+  void swap(list<_Tp, _Alloc>& __x) { __STD::swap(this->_M_node, __x._M_node); }
 
   iterator insert(iterator __position, const _Tp& __x) {
     _Node* __tmp = _M_create_node(__x);
@@ -773,7 +773,7 @@ template <class _Tp, class _Alloc>
 void list<_Tp, _Alloc>::sort()
 {
   // Do nothing if the list has length 0 or 1.
-  if (_M_node->_M_next != _M_node && _M_node->_M_next->_M_next != _M_node) {
+  if (this->_M_node->_M_next != this->_M_node && this->_M_node->_M_next->_M_next != this->_M_node) {
     list<_Tp, _Alloc> __carry;
     list<_Tp, _Alloc> __counter[64];
     int __fill = 0;
@@ -848,7 +848,7 @@ template <class _Tp, class _Alloc> template <class _StrictWeakOrdering>
 void list<_Tp, _Alloc>::sort(_StrictWeakOrdering __comp)
 {
   // Do nothing if the list has length 0 or 1.
-  if (_M_node->_M_next != _M_node && _M_node->_M_next->_M_next != _M_node) {
+  if (this->_M_node->_M_next != this->_M_node && this->_M_node->_M_next->_M_next != this->_M_node) {
     list<_Tp, _Alloc> __carry;
     list<_Tp, _Alloc> __counter[64];
     int __fill = 0;

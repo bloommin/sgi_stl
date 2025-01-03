@@ -33,6 +33,7 @@
 
 __STL_BEGIN_NAMESPACE
 
+#include "char_traits.h"
 
 template <class _Container>
 class back_insert_iterator {
@@ -592,7 +593,7 @@ class istream_iterator {
 public:
   typedef _CharT                         char_type;
   typedef _Traits                        traits_type;
-  typedef basic_istream<_CharT, _Traits> istream_type;
+  typedef std::basic_istream<_CharT, _Traits> istream_type;
 
   typedef input_iterator_tag             iterator_category;
   typedef _Tp                            value_type;
@@ -657,7 +658,7 @@ class ostream_iterator {
 public:
   typedef _CharT                         char_type;
   typedef _Traits                        traits_type;
-  typedef basic_ostream<_CharT, _Traits> ostream_type;
+  typedef std::basic_ostream<_CharT, _Traits> ostream_type;
 
   typedef output_iterator_tag            iterator_category;
   typedef void                           value_type;
@@ -696,8 +697,8 @@ public:
   typedef _CharT                           char_type;
   typedef _Traits                          traits_type;
   typedef typename _Traits::int_type       int_type;
-  typedef basic_streambuf<_CharT, _Traits> streambuf_type;
-  typedef basic_istream<_CharT, _Traits>   istream_type;
+  typedef std::basic_streambuf<_CharT, _Traits> streambuf_type;
+  typedef std::basic_istream<_CharT, _Traits>   istream_type;
 
 public:
   istreambuf_iterator(streambuf_type* __p = 0) { this->_M_init(__p); }
@@ -803,8 +804,8 @@ public:
   typedef _CharT                           char_type;
   typedef _Traits                          traits_type;
   typedef typename _Traits::int_type       int_type;
-  typedef basic_streambuf<_CharT, _Traits> streambuf_type;
-  typedef basic_ostream<_CharT, _Traits>   ostream_type;
+  typedef std::basic_streambuf<_CharT, _Traits> streambuf_type;
+  typedef std::basic_ostream<_CharT, _Traits>   ostream_type;
 
 public:
   ostreambuf_iterator(streambuf_type* __buf) : _M_buf(__buf), _M_ok(__buf) {}
@@ -849,7 +850,7 @@ class istream_iterator {
 #endif /* __STL_TEMPLATE_FRIENDS */
 
 protected:
-  istream* _M_stream;
+  std::istream* _M_stream;
   _Tp _M_value;
   bool _M_end_marker;
   void _M_read() {
@@ -864,8 +865,8 @@ public:
   typedef const _Tp*          pointer;
   typedef const _Tp&          reference;
 
-  istream_iterator() : _M_stream(&cin), _M_end_marker(false) {}
-  istream_iterator(istream& __s) : _M_stream(&__s) { _M_read(); }
+  istream_iterator() : _M_stream(&std::cin), _M_end_marker(false) {}
+  istream_iterator(std::istream& __s) : _M_stream(&__s) { _M_read(); }
   reference operator*() const { return _M_value; }
 #ifndef __SGI_STL_NO_ARROW_OPERATOR
   pointer operator->() const { return &(operator*()); }
@@ -921,7 +922,7 @@ inline bool operator!=(const istream_iterator<_Tp, _Distance>& __x,
 template <class _Tp>
 class ostream_iterator {
 protected:
-  ostream* _M_stream;
+  std::ostream* _M_stream;
   const char* _M_string;
 public:
   typedef output_iterator_tag iterator_category;
@@ -930,8 +931,8 @@ public:
   typedef void                pointer;
   typedef void                reference;
 
-  ostream_iterator(ostream& __s) : _M_stream(&__s), _M_string(0) {}
-  ostream_iterator(ostream& __s, const char* __c) 
+  ostream_iterator(std::ostream& __s) : _M_stream(&__s), _M_string(0) {}
+  ostream_iterator(std::ostream& __s, const char* __c)
     : _M_stream(&__s), _M_string(__c)  {}
   ostream_iterator<_Tp>& operator=(const _Tp& __value) { 
     *_M_stream << __value;

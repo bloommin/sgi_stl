@@ -31,14 +31,14 @@
 
 
 #include <stddef.h>     // for size_t
-#include <string.h>     // for memset
-#include <string>
-#include <stdexcept>    // for invalid_argument, out_of_range, overflow_error
+#include "string.h"     // for memset
+#include "string"
+#include "stdexcept"    // for invalid_argument, out_of_range, overflow_error
 
 #ifdef __STL_USE_NEW_IOSTREAMS 
-#include <iostream>
+#include "iostream"
 #else
-#include <iostream.h>   // for istream, ostream
+#include <iostream>   // for std::istream, std::ostream
 #endif
 
 #define __BITS_PER_WORD (CHAR_BIT*sizeof(unsigned long))
@@ -844,16 +844,16 @@ inline bitset<_Nb> operator^(const bitset<_Nb>& __x, const bitset<_Nb>& __y) {
 #ifdef __STL_USE_NEW_IOSTREAMS
 
 template <class _CharT, class _Traits, size_t _Nb>
-basic_istream<_CharT, _Traits>&
-operator>>(basic_istream<_CharT, _Traits>& __is, bitset<_Nb>& __x)
+std::basic_istream<_CharT, _Traits>&
+operator>>(std::basic_istream<_CharT, _Traits>& __is, bitset<_Nb>& __x)
 {
   basic_string<_CharT, _Traits> __tmp;
   __tmp.reserve(_Nb);
 
   // Skip whitespace
-  typename basic_istream<_CharT, _Traits>::sentry __sentry(__is);
+  typename std::basic_istream<_CharT, _Traits>::sentry __sentry(__is);
   if (__sentry) {
-    basic_streambuf<_CharT, _Traits>* __buf = __is.rdbuf();
+    std::basic_streambuf<_CharT, _Traits>* __buf = __is.rdbuf();
     for (size_t __i = 0; __i < _Nb; ++__i) {
       static _Traits::int_type __eof = _Traits::eof();
 
@@ -885,8 +885,8 @@ operator>>(basic_istream<_CharT, _Traits>& __is, bitset<_Nb>& __x)
 }
 
 template <class _CharT, class _Traits, size_t _Nb>
-basic_ostream<_CharT, _Traits>&
-operator<<(basic_ostream<_CharT, _Traits>& __os, const bitset<_Nb>& __x)
+std::basic_ostream<_CharT, _Traits>&
+operator<<(std::basic_ostream<_CharT, _Traits>& __os, const bitset<_Nb>& __x)
 {
   basic_string<_CharT, _Traits> __tmp;
   __x._M_copy_to_string(__tmp);
@@ -896,7 +896,7 @@ operator<<(basic_ostream<_CharT, _Traits>& __os, const bitset<_Nb>& __x)
 #else /* __STL_USE_NEW_IOSTREAMS */
 
 template <size_t _Nb>
-istream& operator>>(istream& __is, bitset<_Nb>& __x) {
+std::istream& operator>>(std::istream& __is, bitset<_Nb>& __x) {
   string __tmp;
   __tmp.reserve(_Nb);
 
@@ -932,7 +932,7 @@ istream& operator>>(istream& __is, bitset<_Nb>& __x) {
 }
 
 template <size_t _Nb>
-ostream& operator<<(ostream& __os, const bitset<_Nb>& __x) {
+std::ostream& operator<<(std::ostream& __os, const bitset<_Nb>& __x) {
   string __tmp;
   __x._M_copy_to_string(__tmp);
   return __os << __tmp;

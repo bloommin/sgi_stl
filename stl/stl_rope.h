@@ -78,7 +78,7 @@ class char_producer {
         virtual void operator()(size_t __start_pos, size_t __len, 
                                 _CharT* __buffer) = 0;
         // Buffer should really be an arbitrary output iterator.
-        // That way we could flatten directly into an ostream, etc.
+        // That way we could flatten directly into an std::ostream, etc.
         // This is thoroughly impossible, since iterator types don't
         // have runtime descriptions.
 };
@@ -89,7 +89,7 @@ class char_producer {
 // array to the sequence.  Sequence buffers are useful only if
 // appending an entire array is cheaper than appending element by element.
 // This is true for many string representations.
-// This should  perhaps inherit from ostream<sequence::value_type>
+// This should  perhaps inherit from std::ostream<sequence::value_type>
 // and be implemented correspondingly, so that they can be used
 // for formatted.  For the sake of portability, we don't do this yet.
 //
@@ -2640,12 +2640,12 @@ inline bool operator!= (const _Rope_char_ptr_proxy<_CharT,_Alloc>& __x,
 
 #ifdef __STL_USE_NEW_IOSTREAMS
   template<class _CharT, class _Traits, class _Alloc>
-  basic_ostream<_CharT, _Traits>& operator<<
-                                        (basic_ostream<_CharT, _Traits>& __o,
+  std::basic_ostream<_CharT, _Traits>& operator<<
+                                        (std::basic_ostream<_CharT, _Traits>& __o,
                                          const rope<_CharT, _Alloc>& __r);
 #else
   template<class _CharT, class _Alloc>
-  ostream& operator<< (ostream& __o, const rope<_CharT, _Alloc>& __r);
+  std::ostream& operator<< (std::ostream& __o, const rope<_CharT, _Alloc>& __r);
 #endif
         
 typedef rope<char> crope;

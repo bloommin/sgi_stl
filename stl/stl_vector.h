@@ -31,7 +31,7 @@
 #ifndef __SGI_STL_INTERNAL_VECTOR_H
 #define __SGI_STL_INTERNAL_VECTOR_H
 
-#include <concept_checks.h>
+#include "concept_checks.h"
 
 __STL_BEGIN_NAMESPACE 
 
@@ -109,12 +109,12 @@ struct _Vector_base
 
   _Vector_base(const allocator_type& __a) : _Base(__a) {}
   _Vector_base(size_t __n, const allocator_type& __a) : _Base(__a) {
-    _M_start = _M_allocate(__n);
-    _M_finish = _M_start;
-    _M_end_of_storage = _M_start + __n;
+    this->_M_start = this->_M_allocate(__n);
+    this->_M_finish = this->_M_start;
+    this->_M_end_of_storage = this->_M_start + __n;
   }
 
-  ~_Vector_base() { _M_deallocate(_M_start, _M_end_of_storage - _M_start); }
+  ~_Vector_base() { this->_M_deallocate(this->_M_start, this->_M_end_of_storage - this->_M_start); }
 };    
 
 #else /* __STL_USE_STD_ALLOCATORS */
@@ -198,10 +198,10 @@ protected:
   void _M_insert_aux(iterator __position);
 
 public:
-  iterator begin() { return _M_start; }
-  const_iterator begin() const { return _M_start; }
-  iterator end() { return _M_finish; }
-  const_iterator end() const { return _M_finish; }
+  iterator begin() { return this->_M_start; }
+  const_iterator begin() const { return this->_M_start; }
+  iterator end() { return this->_M_finish; }
+  const_iterator end() const { return this->_M_finish; }
 
   reverse_iterator rbegin()
     { return reverse_iterator(end()); }
@@ -217,7 +217,7 @@ public:
   size_type max_size() const
     { return size_type(-1) / sizeof(_Tp); }
   size_type capacity() const
-    { return size_type(_M_end_of_storage - begin()); }
+    { return size_type(this->_M_end_of_storage - begin()); }
   bool empty() const
     { return begin() == end(); }
 
@@ -242,15 +242,15 @@ public:
   vector(size_type __n, const _Tp& __value,
          const allocator_type& __a = allocator_type()) 
     : _Base(__n, __a)
-    { _M_finish = uninitialized_fill_n(_M_start, __n, __value); }
+    { this->_M_finish = uninitialized_fill_n(this->_M_start, __n, __value); }
 
   explicit vector(size_type __n)
     : _Base(__n, allocator_type())
-    { _M_finish = uninitialized_fill_n(_M_start, __n, _Tp()); }
+    { this->_M_finish = uninitialized_fill_n(this->_M_start, __n, _Tp()); }
 
   vector(const vector<_Tp, _Alloc>& __x) 
     : _Base(__x.size(), __x.get_allocator())
-    { _M_finish = uninitialized_copy(__x.begin(), __x.end(), _M_start); }
+    { this->_M_finish = uninitialized_copy(__x.begin(), __x.end(), this->_M_start); }
 
 #ifdef __STL_MEMBER_TEMPLATES
   // Check whether it's an integral type.  If so, it's not an iterator.
@@ -263,9 +263,9 @@ public:
 
   template <class _Integer>
   void _M_initialize_aux(_Integer __n, _Integer __value, __true_type) {
-    _M_start = _M_allocate(__n);
-    _M_end_of_storage = _M_start + __n; 
-    _M_finish = uninitialized_fill_n(_M_start, __n, __value);
+    this->_M_start = _M_allocate(__n);
+    this->_M_end_of_storage = this->_M_start + __n;
+    this->_M_finish = uninitialized_fill_n(this->_M_start, __n, __value);
   }
 
   template <class _InputIterator>
@@ -281,18 +281,18 @@ public:
     { _M_finish = uninitialized_copy(__first, __last, _M_start); }
 #endif /* __STL_MEMBER_TEMPLATES */
 
-  ~vector() { destroy(_M_start, _M_finish); }
+  ~vector() { destroy(this->_M_start, this->_M_finish); }
 
   vector<_Tp, _Alloc>& operator=(const vector<_Tp, _Alloc>& __x);
   void reserve(size_type __n) {
     if (capacity() < __n) {
       const size_type __old_size = size();
-      iterator __tmp = _M_allocate_and_copy(__n, _M_start, _M_finish);
-      destroy(_M_start, _M_finish);
-      _M_deallocate(_M_start, _M_end_of_storage - _M_start);
-      _M_start = __tmp;
-      _M_finish = __tmp + __old_size;
-      _M_end_of_storage = _M_start + __n;
+      iterator __tmp = _M_allocate_and_copy(__n, this->_M_start, this->_M_finish);
+      destroy(this->_M_start, this->_M_finish);
+      this->_M_deallocate(this->_M_start, this->_M_end_of_storage - this->_M_start);
+      this->_M_start = __tmp;
+      this->_M_finish = __tmp + __old_size;
+      this->_M_end_of_storage = this->_M_start + __n;
     }
   }
 
@@ -336,32 +336,32 @@ public:
   const_reference back() const { return *(end() - 1); }
 
   void push_back(const _Tp& __x) {
-    if (_M_finish != _M_end_of_storage) {
-      construct(_M_finish, __x);
-      ++_M_finish;
+    if (this->_M_finish != this->_M_end_of_storage) {
+      construct(this->_M_finish, __x);
+      ++this->_M_finish;
     }
     else
       _M_insert_aux(end(), __x);
   }
   void push_back() {
-    if (_M_finish != _M_end_of_storage) {
-      construct(_M_finish);
-      ++_M_finish;
+    if (this->_M_finish != this->_M_end_of_storage) {
+      construct(this->_M_finish);
+      ++this->_M_finish;
     }
     else
       _M_insert_aux(end());
   }
   void swap(vector<_Tp, _Alloc>& __x) {
-    __STD::swap(_M_start, __x._M_start);
-    __STD::swap(_M_finish, __x._M_finish);
-    __STD::swap(_M_end_of_storage, __x._M_end_of_storage);
+    __STD::swap(this->_M_start, __x._M_start);
+    __STD::swap(this->_M_finish, __x._M_finish);
+    __STD::swap(this->_M_end_of_storage, __x._M_end_of_storage);
   }
 
   iterator insert(iterator __position, const _Tp& __x) {
     size_type __n = __position - begin();
-    if (_M_finish != _M_end_of_storage && __position == end()) {
-      construct(_M_finish, __x);
-      ++_M_finish;
+    if (this->_M_finish != this->_M_end_of_storage && __position == end()) {
+      construct(this->_M_finish, __x);
+      ++this->_M_finish;
     }
     else
       _M_insert_aux(__position, __x);
@@ -369,9 +369,9 @@ public:
   }
   iterator insert(iterator __position) {
     size_type __n = __position - begin();
-    if (_M_finish != _M_end_of_storage && __position == end()) {
-      construct(_M_finish);
-      ++_M_finish;
+    if (this->_M_finish != this->_M_end_of_storage && __position == end()) {
+      construct(this->_M_finish);
+      ++this->_M_finish;
     }
     else
       _M_insert_aux(__position);
@@ -407,20 +407,20 @@ public:
   void _M_fill_insert (iterator __pos, size_type __n, const _Tp& __x);
 
   void pop_back() {
-    --_M_finish;
-    destroy(_M_finish);
+    --this->_M_finish;
+    destroy(this->_M_finish);
   }
   iterator erase(iterator __position) {
     if (__position + 1 != end())
-      copy(__position + 1, _M_finish, __position);
-    --_M_finish;
-    destroy(_M_finish);
+      copy(__position + 1, this->_M_finish, __position);
+    --this->_M_finish;
+    destroy(this->_M_finish);
     return __position;
   }
   iterator erase(iterator __first, iterator __last) {
-    iterator __i = copy(__last, _M_finish, __first);
-    destroy(__i, _M_finish);
-    _M_finish = _M_finish - (__last - __first);
+    iterator __i = copy(__last, this->_M_finish, __first);
+    destroy(__i, this->_M_finish);
+    this->_M_finish = this->_M_finish - (__last - __first);
     return __first;
   }
 
@@ -440,7 +440,7 @@ protected:
   iterator _M_allocate_and_copy(size_type __n, _ForwardIterator __first, 
                                                _ForwardIterator __last)
 {
-    iterator __result = _M_allocate(__n);
+    iterator __result = this->_M_allocate(__n);
     __STL_TRY {
       uninitialized_copy(__first, __last, __result);
       return __result;
@@ -477,9 +477,9 @@ protected:
   {
     size_type __n = 0;
     distance(__first, __last, __n);
-    _M_start = _M_allocate(__n);
-    _M_end_of_storage = _M_start + __n;
-    _M_finish = uninitialized_copy(__first, __last, _M_start);
+    this->_M_start = this->_M_allocate(__n);
+    this->_M_end_of_storage = this->_M_start + __n;
+    this->_M_finish = uninitialized_copy(__first, __last, this->_M_start);
   }
 
   template <class _InputIterator>
@@ -553,20 +553,20 @@ vector<_Tp,_Alloc>::operator=(const vector<_Tp, _Alloc>& __x)
     const size_type __xlen = __x.size();
     if (__xlen > capacity()) {
       iterator __tmp = _M_allocate_and_copy(__xlen, __x.begin(), __x.end());
-      destroy(_M_start, _M_finish);
-      _M_deallocate(_M_start, _M_end_of_storage - _M_start);
-      _M_start = __tmp;
-      _M_end_of_storage = _M_start + __xlen;
+      destroy(this->_M_start, this->_M_finish);
+      this->_M_deallocate(this->_M_start, this->_M_end_of_storage - this->_M_start);
+      this->_M_start = __tmp;
+      this->_M_end_of_storage = this->_M_start + __xlen;
     }
     else if (size() >= __xlen) {
       iterator __i = copy(__x.begin(), __x.end(), begin());
-      destroy(__i, _M_finish);
+      destroy(__i, this->_M_finish);
     }
     else {
-      copy(__x.begin(), __x.begin() + size(), _M_start);
-      uninitialized_copy(__x.begin() + size(), __x.end(), _M_finish);
+      copy(__x.begin(), __x.begin() + size(), this->_M_start);
+      uninitialized_copy(__x.begin() + size(), __x.end(), this->_M_finish);
     }
-    _M_finish = _M_start + __xlen;
+    this->_M_finish = this->_M_start + __xlen;
   }
   return *this;
 }
@@ -580,7 +580,7 @@ void vector<_Tp, _Alloc>::_M_fill_assign(size_t __n, const value_type& __val)
   }
   else if (__n > size()) {
     fill(begin(), end(), __val);
-    _M_finish = uninitialized_fill_n(_M_finish, __n - size(), __val);
+    this->_M_finish = uninitialized_fill_n(this->_M_finish, __n - size(), __val);
   }
   else
     erase(fill_n(begin(), __n, __val), end());
@@ -609,21 +609,21 @@ vector<_Tp, _Alloc>::_M_assign_aux(_ForwardIter __first, _ForwardIter __last,
 
   if (__len > capacity()) {
     iterator __tmp = _M_allocate_and_copy(__len, __first, __last);
-    destroy(_M_start, _M_finish);
-    _M_deallocate(_M_start, _M_end_of_storage - _M_start);
-    _M_start = __tmp;
-    _M_end_of_storage = _M_finish = _M_start + __len;
+    destroy(this->_M_start, this->_M_finish);
+    this->_M_deallocate(this->_M_start, this->_M_end_of_storage - this->_M_start);
+    this->_M_start = __tmp;
+    this->_M_end_of_storage = this->_M_finish = this->_M_start + __len;
   }
   else if (size() >= __len) {
-    iterator __new_finish = copy(__first, __last, _M_start);
-    destroy(__new_finish, _M_finish);
-    _M_finish = __new_finish;
+    iterator __new_finish = copy(__first, __last, this->_M_start);
+    destroy(__new_finish, this->_M_finish);
+    this->_M_finish = __new_finish;
   }
   else {
     _ForwardIter __mid = __first;
     advance(__mid, size());
-    copy(__first, __mid, _M_start);
-    _M_finish = uninitialized_copy(__mid, __last, _M_finish);
+    copy(__first, __mid, this->_M_start);
+    this->_M_finish = uninitialized_copy(__mid, __last, this->_M_finish);
   }
 }
 
@@ -633,31 +633,31 @@ template <class _Tp, class _Alloc>
 void 
 vector<_Tp, _Alloc>::_M_insert_aux(iterator __position, const _Tp& __x)
 {
-  if (_M_finish != _M_end_of_storage) {
-    construct(_M_finish, *(_M_finish - 1));
-    ++_M_finish;
+  if (this->_M_finish != this->_M_end_of_storage) {
+    construct(this->_M_finish, *(this->_M_finish - 1));
+    ++this->_M_finish;
     _Tp __x_copy = __x;
-    copy_backward(__position, _M_finish - 2, _M_finish - 1);
+    copy_backward(__position, this->_M_finish - 2, this->_M_finish - 1);
     *__position = __x_copy;
   }
   else {
     const size_type __old_size = size();
     const size_type __len = __old_size != 0 ? 2 * __old_size : 1;
-    iterator __new_start = _M_allocate(__len);
+    iterator __new_start = this->_M_allocate(__len);
     iterator __new_finish = __new_start;
     __STL_TRY {
-      __new_finish = uninitialized_copy(_M_start, __position, __new_start);
+      __new_finish = uninitialized_copy(this->_M_start, __position, __new_start);
       construct(__new_finish, __x);
       ++__new_finish;
-      __new_finish = uninitialized_copy(__position, _M_finish, __new_finish);
+      __new_finish = uninitialized_copy(__position, this->_M_finish, __new_finish);
     }
     __STL_UNWIND((destroy(__new_start,__new_finish), 
-                  _M_deallocate(__new_start,__len)));
+                  this->_M_deallocate(__new_start,__len)));
     destroy(begin(), end());
-    _M_deallocate(_M_start, _M_end_of_storage - _M_start);
-    _M_start = __new_start;
-    _M_finish = __new_finish;
-    _M_end_of_storage = __new_start + __len;
+    this->_M_deallocate(this->_M_start, this->_M_end_of_storage - this->_M_start);
+    this->_M_start = __new_start;
+    this->_M_finish = __new_finish;
+    this->_M_end_of_storage = __new_start + __len;
   }
 }
 
@@ -665,30 +665,30 @@ template <class _Tp, class _Alloc>
 void 
 vector<_Tp, _Alloc>::_M_insert_aux(iterator __position)
 {
-  if (_M_finish != _M_end_of_storage) {
-    construct(_M_finish, *(_M_finish - 1));
-    ++_M_finish;
-    copy_backward(__position, _M_finish - 2, _M_finish - 1);
+  if (this->_M_finish != this->_M_end_of_storage) {
+    construct(this->_M_finish, *(this->_M_finish - 1));
+    ++this->_M_finish;
+    copy_backward(__position, this->_M_finish - 2, this->_M_finish - 1);
     *__position = _Tp();
   }
   else {
     const size_type __old_size = size();
     const size_type __len = __old_size != 0 ? 2 * __old_size : 1;
-    iterator __new_start = _M_allocate(__len);
+    iterator __new_start = this->_M_allocate(__len);
     iterator __new_finish = __new_start;
     __STL_TRY {
-      __new_finish = uninitialized_copy(_M_start, __position, __new_start);
+      __new_finish = uninitialized_copy(this->_M_start, __position, __new_start);
       construct(__new_finish);
       ++__new_finish;
-      __new_finish = uninitialized_copy(__position, _M_finish, __new_finish);
+      __new_finish = uninitialized_copy(__position, this->_M_finish, __new_finish);
     }
     __STL_UNWIND((destroy(__new_start,__new_finish), 
                   _M_deallocate(__new_start,__len)));
     destroy(begin(), end());
-    _M_deallocate(_M_start, _M_end_of_storage - _M_start);
-    _M_start = __new_start;
-    _M_finish = __new_finish;
-    _M_end_of_storage = __new_start + __len;
+    this->_M_deallocate(this->_M_start, this->_M_end_of_storage - this->_M_start);
+    this->_M_start = __new_start;
+    this->_M_finish = __new_finish;
+    this->_M_end_of_storage = __new_start + __len;
   }
 }
 
@@ -697,42 +697,42 @@ void vector<_Tp, _Alloc>::_M_fill_insert(iterator __position, size_type __n,
                                          const _Tp& __x)
 {
   if (__n != 0) {
-    if (size_type(_M_end_of_storage - _M_finish) >= __n) {
+    if (size_type(this->_M_end_of_storage - this->_M_finish) >= __n) {
       _Tp __x_copy = __x;
-      const size_type __elems_after = _M_finish - __position;
-      iterator __old_finish = _M_finish;
+      const size_type __elems_after = this->_M_finish - __position;
+      iterator __old_finish = this->_M_finish;
       if (__elems_after > __n) {
-        uninitialized_copy(_M_finish - __n, _M_finish, _M_finish);
-        _M_finish += __n;
+        uninitialized_copy(this->_M_finish - __n, this->_M_finish, this->_M_finish);
+        this->_M_finish += __n;
         copy_backward(__position, __old_finish - __n, __old_finish);
         fill(__position, __position + __n, __x_copy);
       }
       else {
-        uninitialized_fill_n(_M_finish, __n - __elems_after, __x_copy);
-        _M_finish += __n - __elems_after;
-        uninitialized_copy(__position, __old_finish, _M_finish);
-        _M_finish += __elems_after;
+        uninitialized_fill_n(this->_M_finish, __n - __elems_after, __x_copy);
+        this->_M_finish += __n - __elems_after;
+        uninitialized_copy(__position, __old_finish, this->_M_finish);
+        this->_M_finish += __elems_after;
         fill(__position, __old_finish, __x_copy);
       }
     }
     else {
       const size_type __old_size = size();        
       const size_type __len = __old_size + max(__old_size, __n);
-      iterator __new_start = _M_allocate(__len);
+      iterator __new_start = this->_M_allocate(__len);
       iterator __new_finish = __new_start;
       __STL_TRY {
-        __new_finish = uninitialized_copy(_M_start, __position, __new_start);
+        __new_finish = uninitialized_copy(this->_M_start, __position, __new_start);
         __new_finish = uninitialized_fill_n(__new_finish, __n, __x);
         __new_finish
-          = uninitialized_copy(__position, _M_finish, __new_finish);
+          = uninitialized_copy(__position, this->_M_finish, __new_finish);
       }
       __STL_UNWIND((destroy(__new_start,__new_finish), 
                     _M_deallocate(__new_start,__len)));
-      destroy(_M_start, _M_finish);
-      _M_deallocate(_M_start, _M_end_of_storage - _M_start);
-      _M_start = __new_start;
-      _M_finish = __new_finish;
-      _M_end_of_storage = __new_start + __len;
+      destroy(this->_M_start, this->_M_finish);
+      this->_M_deallocate(this->_M_start, this->_M_end_of_storage - this->_M_start);
+      this->_M_start = __new_start;
+      this->_M_finish = __new_finish;
+      this->_M_end_of_storage = __new_start + __len;
     }
   }
 }
@@ -762,43 +762,43 @@ vector<_Tp, _Alloc>::_M_range_insert(iterator __position,
   if (__first != __last) {
     size_type __n = 0;
     distance(__first, __last, __n);
-    if (size_type(_M_end_of_storage - _M_finish) >= __n) {
-      const size_type __elems_after = _M_finish - __position;
-      iterator __old_finish = _M_finish;
+    if (size_type(this->_M_end_of_storage - this->_M_finish) >= __n) {
+      const size_type __elems_after = this->_M_finish - __position;
+      iterator __old_finish = this->_M_finish;
       if (__elems_after > __n) {
-        uninitialized_copy(_M_finish - __n, _M_finish, _M_finish);
-        _M_finish += __n;
+        uninitialized_copy(this->_M_finish - __n, this->_M_finish, this->_M_finish);
+        this->_M_finish += __n;
         copy_backward(__position, __old_finish - __n, __old_finish);
         copy(__first, __last, __position);
       }
       else {
         _ForwardIterator __mid = __first;
         advance(__mid, __elems_after);
-        uninitialized_copy(__mid, __last, _M_finish);
-        _M_finish += __n - __elems_after;
-        uninitialized_copy(__position, __old_finish, _M_finish);
-        _M_finish += __elems_after;
+        uninitialized_copy(__mid, __last, this->_M_finish);
+        this->_M_finish += __n - __elems_after;
+        uninitialized_copy(__position, __old_finish, this->_M_finish);
+        this->_M_finish += __elems_after;
         copy(__first, __mid, __position);
       }
     }
     else {
       const size_type __old_size = size();
       const size_type __len = __old_size + max(__old_size, __n);
-      iterator __new_start = _M_allocate(__len);
+      iterator __new_start = this->_M_allocate(__len);
       iterator __new_finish = __new_start;
       __STL_TRY {
-        __new_finish = uninitialized_copy(_M_start, __position, __new_start);
+        __new_finish = uninitialized_copy(this->_M_start, __position, __new_start);
         __new_finish = uninitialized_copy(__first, __last, __new_finish);
         __new_finish
-          = uninitialized_copy(__position, _M_finish, __new_finish);
+          = uninitialized_copy(__position, this->_M_finish, __new_finish);
       }
       __STL_UNWIND((destroy(__new_start,__new_finish), 
                     _M_deallocate(__new_start,__len)));
-      destroy(_M_start, _M_finish);
-      _M_deallocate(_M_start, _M_end_of_storage - _M_start);
-      _M_start = __new_start;
-      _M_finish = __new_finish;
-      _M_end_of_storage = __new_start + __len;
+      destroy(this->_M_start, this->_M_finish);
+      this->_M_deallocate(this->_M_start, this->_M_end_of_storage - this->_M_start);
+      this->_M_start = __new_start;
+      this->_M_finish = __new_finish;
+      this->_M_end_of_storage = __new_start + __len;
     }
   }
 }

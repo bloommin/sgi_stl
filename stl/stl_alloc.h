@@ -50,15 +50,15 @@
 #endif
 
 #include <stddef.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
+#include "stdlib.h"
+#include "string.h"
+#include "assert.h"
 #ifndef __RESTRICT
 #  define __RESTRICT
 #endif
 
 #ifdef __STL_THREADS
-# include <stl_threads.h>
+# include "stl_threads.h"
 # define __NODE_ALLOCATOR_THREADS true
 # ifdef __STL_SGI_THREADS
   // We test whether threads are in use before locking.
