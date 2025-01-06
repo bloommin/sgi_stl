@@ -349,18 +349,21 @@ _Rb_tree_rebalance_for_erase(_Rb_tree_node_base* __z,
         __z->_M_parent->_M_left = __x;
       else
         __z->_M_parent->_M_right = __x;
-    if (__leftmost == __z) 
-      if (__z->_M_right == 0)        // __z->_M_left must be null also
+    if (__leftmost == __z) {
+      if (__z->_M_right == 0)
+        // __z->_M_left must be null also
         __leftmost = __z->_M_parent;
-    // makes __leftmost == this->_M_header if __z == __root
+        // makes __leftmost == this->_M_header if __z == __root
       else
         __leftmost = _Rb_tree_node_base::_S_minimum(__x);
-    if (__rightmost == __z)  
+    }
+    if (__rightmost == __z) {
       if (__z->_M_left == 0)         // __z->_M_right must be null also
         __rightmost = __z->_M_parent;  
-    // makes __rightmost == this->_M_header if __z == __root
+      // makes __rightmost == this->_M_header if __z == __root
       else                      // __x == __z->_M_left
         __rightmost = _Rb_tree_node_base::_S_maximum(__x);
+    }
   }
   if (__y->_M_color != _S_rb_tree_red) { 
     while (__x != __root && (__x == 0 || __x->_M_color == _S_rb_tree_black))
@@ -918,11 +921,12 @@ _Rb_tree<_Key,_Value,_KeyOfValue,_Compare,_Alloc>
     __x = __comp ? _S_left(__x) : _S_right(__x);
   }
   iterator __j = iterator(__y);   
-  if (__comp)
+  if (__comp) {
     if (__j == begin())     
       return pair<iterator,bool>(_M_insert(__x, __y, __v), true);
     else
       --__j;
+  }
   if (_M_key_compare(_S_key(__j._M_node), _KeyOfValue()(__v)))
     return pair<iterator,bool>(_M_insert(__x, __y, __v), true);
   return pair<iterator,bool>(__j, false);
